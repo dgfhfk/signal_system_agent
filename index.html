@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>信号与系统教学智能体 v4</title>
+<script src="config.js"></script>
+<script>
+window.MathJax = {
+  tex: {inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']]},
+  svg: {fontCache: 'global'}
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root{
+  --bg:#f6f8fb;--panel:#fff;--line:#e5e7eb;--text:#1f2937;--muted:#6b7280;
+  --primary:#2563eb;--primary2:#1d4ed8;--soft:#eff6ff;--good:#ecfdf5;--warn:#fff7ed;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text)}
+header{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:10}
+.brand h1{font-size:22px;margin:0}.brand .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.status{font-size:12px;color:#166534;background:#ecfdf5;border:1px solid #bbf7d0;padding:6px 10px;border-radius:999px}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 72px)}
+.sidebar{background:#0f172a;color:#fff;padding:18px 14px;position:sticky;top:72px;height:calc(100vh - 72px);overflow:auto}
+.group{font-size:11px;color:#94a3b8;margin:12px 10px 6px}
+.nav{width:100%;border:0;background:transparent;color:#cbd5e1;text-align:left;padding:10px 12px;border-radius:8px;margin:2px 0;cursor:pointer}
+.nav:hover,.nav.active{background:#1e293b;color:#fff}
+.main{padding:20px;max-width:1450px;width:100%;margin:0 auto}
+.layout{display:grid;grid-template-columns:310px 1fr;gap:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.03);margin-bottom:16px}
+.card h2,.card h3{margin-top:0}.muted{color:var(--muted);font-size:13px}
+.badge{display:inline-block;font-size:11px;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;margin:2px 4px 2px 0}
+.btn{border:0;border-radius:8px;padding:9px 13px;background:var(--primary);color:#fff;cursor:pointer;margin:4px 4px 4px 0}
+.btn.secondary{background:#e5e7eb;color:#111827}.btn.ghost{background:#fff;color:var(--primary);border:1px solid #93c5fd}
+.task{padding:10px;border:1px solid var(--line);border-radius:9px;margin:8px 0;cursor:pointer}
+.task:hover,.task.active{border-color:#93c5fd;background:#f8fbff}
+.field{margin:12px 0}.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+select,input[type=number],input[type=text],textarea{width:100%;padding:9px;border:1px solid #d1d5db;border-radius:8px;background:#fff}
+input[type=range]{width:100%}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.plotgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.plot{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}
+.plot .title{font-size:13px;font-weight:700;margin-bottom:6px}
+canvas{width:100%;height:190px;border-radius:8px;background:#fff}
+.formula{background:#f8fafc;border-left:4px solid var(--primary);padding:10px 12px;margin:10px 0}
+.info{background:var(--soft);border:1px solid #bfdbfe;padding:12px;border-radius:10px;margin:10px 0}
+.good{background:var(--good);border:1px solid #a7f3d0;padding:10px;border-radius:9px;margin-top:8px}
+.warn{background:var(--warn);border:1px solid #fed7aa;padding:10px;border-radius:9px;margin-top:8px}
+.qbox{border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0}
+.option{display:block;margin:8px 0}
+.log{font-family:Consolas,monospace;background:#0f172a;color:#e2e8f0;padding:12px;border-radius:9px;white-space:pre-wrap;max-height:280px;overflow:auto;font-size:12px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{font-size:26px;font-weight:700;margin-top:5px}
+.table{width:100%;border-collapse:collapse;font-size:13px}.table th,.table td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}
+.hidden{display:none}
+.progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}.progress span{display:block;height:100%;background:var(--primary)}
+.mastery{display:grid;grid-template-columns:145px 1fr 50px;gap:10px;align-items:center;margin:8px 0}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:static;height:auto;display:flex;gap:6px;overflow:auto}.group{display:none}.nav{width:auto;white-space:nowrap}.plotgrid,.row3,.row2,.kpi-grid{grid-template-columns:1fr}}
+
+.deploybar{font-size:12px;color:#475569;margin-top:6px}
+.deploybar b{color:#0f172a}
+
+.circuit-wrap{background:#fbfdff;border:1px solid #dbeafe;border-radius:10px;padding:12px;margin:10px 0}
+.circuit-svg{width:100%;max-width:760px;height:auto;display:block;margin:auto}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#475569;margin:6px 0}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;margin-right:5px;vertical-align:middle;background:var(--c)}
+.eqchain{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin:10px 0}
+.eqstep{border:1px solid #dbeafe;background:#f8fbff;border-radius:9px;padding:9px;font-size:13px}
+.method-details{border:1px solid var(--line);border-radius:10px;margin:12px 0;background:#fff;overflow:hidden}
+.method-details summary{cursor:pointer;font-weight:700;padding:12px 14px;background:#f8fafc}
+.method-details[open] summary{border-bottom:1px solid var(--line)}
+.method-body{padding:12px 14px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>《信号与系统》教学智能体</h1>
+    <div class="sub">任务驱动 · 参数交互 · 动态可视化 · 学习诊断 · 过程记录</div>
+  </div>
+  <div class="status">演示原型 · 本地运行</div>
+  <div class="deploybar">数据模式：<b id="dataMode">浏览器本地保存</b> · 当前学生：<b id="studentIdShow">-</b></div>
+</header>
+
+<div class="app">
+<aside class="sidebar">
+  <div class="group">课程入口</div>
+  <button class="nav active" onclick="showPage('home',this)">课程总览</button>
+  <div class="group">核心知识点智能体</div>
+  <button class="nav" onclick="openModule('conv',this)">卷积与LTI时域响应</button>
+  <button class="nav" onclick="openModule('fourier',this)">傅里叶变换与频谱</button>
+  <button class="nav" onclick="openModule('sampling',this)">抽样与混叠</button>
+  <button class="nav" onclick="openModule('laplace',this)">拉普拉斯与S域系统</button>
+  <button class="nav" onclick="openModule('poles',this)">零极点与系统特性</button>
+  <button class="nav" onclick="openModule('z',this)">Z变换与离散系统</button>
+  <div class="group">教师端</div>
+  <button class="nav" onclick="showPage('teacher',this)">学习过程与学情</button>
+</aside>
+
+<main class="main">
+<section id="home">
+  <div class="card">
+    <h2>课程总智能体</h2>
+    <p>统一入口负责课程导航、核心知识点学习、过程数据记录和学习画像更新。课程目标覆盖时域、频域和复频域三条主线。</p>
+    <span class="badge">目标1：时域分析</span><span class="badge">目标2：频域分析</span><span class="badge">目标3：复频域分析</span>
+  </div>
+  <div class="row3">
+    <div class="card"><h3>卷积与LTI</h3><p class="muted">连续/离散卷积、冲激响应、零状态响应。</p><button class="btn" onclick="openModule('conv')">进入模块</button></div>
+    <div class="card"><h3>傅里叶与频谱</h3><p class="muted">频谱物理意义、变换性质、系统频率响应。</p><button class="btn" onclick="openModule('fourier')">进入模块</button></div>
+    <div class="card"><h3>抽样与混叠</h3><p class="muted">频谱延拓、奈奎斯特条件、混叠与恢复。</p><button class="btn" onclick="openModule('sampling')">进入模块</button></div>
+  </div>
+  <div class="row3">
+    <div class="card"><h3>拉普拉斯与S域</h3><p class="muted">微分方程、系统函数、S域响应。</p><button class="btn" onclick="openModule('laplace')">进入模块</button></div>
+    <div class="card"><h3>零极点与系统特性</h3><p class="muted">稳定性、自然响应、频率响应。</p><button class="btn" onclick="openModule('poles')">进入模块</button></div>
+    <div class="card"><h3>Z变换与离散系统</h3><p class="muted">差分方程、ROC、单位圆、H(z)。</p><button class="btn" onclick="openModule('z')">进入模块</button></div>
+  </div>
+</section>
+
+<section id="module" class="hidden">
+  <div class="card">
+    <h2 id="moduleTitle"></h2>
+    <div id="moduleDesc" class="muted"></div>
+  </div>
+  <div class="layout">
+    <div>
+      <div class="card">
+        <h3>学习任务</h3>
+        <div id="taskList"></div>
+      </div>
+      <div class="card">
+        <h3>参数设置</h3>
+        <div id="paramPanel"></div>
+      </div>
+      <div class="card">
+        <h3>智能体提示</h3>
+        <div id="hintPanel" class="info">请选择学习任务并开始交互。</div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>知识与公式</h3>
+        <div id="knowledgePanel"></div>
+      </div>
+      <div class="card">
+        <h3>交互可视化</h3>
+        <div id="vizPanel"></div>
+      </div>
+      <div class="card">
+        <h3>学生判断与提交</h3>
+        <div id="questionPanel"></div>
+      </div>
+      <div class="card">
+        <h3>学习记录与小结</h3>
+        <div id="recordPanel"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="teacher" class="hidden">
+  <div class="kpi-grid">
+    <div class="card"><div class="muted">参与学生</div><div class="kpi" id="kpiStudents">-</div></div>
+    <div class="card"><div class="muted">已完成核心任务</div><div class="kpi" id="kpiDone">-</div></div>
+    <div class="card"><div class="muted">需重点关注</div><div class="kpi" id="kpiFocus">-</div></div>
+    <div class="card"><div class="muted">重复错误率</div><div class="kpi" id="kpiRepeat">-</div></div>
+  </div>
+  <div class="card">
+    <h3>知识点学情概览</h3>
+    <table class="table">
+      <thead><tr><th>模块</th><th>主要薄弱点</th><th>教师建议</th></tr></thead>
+      <tbody id="teacherTableBody">
+        <tr><td colspan="3" class="muted">正在加载本机数据……</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <h3 style="margin:0">过程日志</h3>
+      <div>
+        <button class="btn ghost" onclick="refreshTeacherView()">刷新</button>
+        <button class="btn ghost" onclick="exportLocalData()">导出本机数据</button>
+      </div>
+    </div>
+    <div id="eventLog" class="log" style="margin-top:10px">等待加载……</div>
+  </div>
+</section>
+</main>
+</div>
+
+<script>
+const events=[];
+const records=[];
+let currentModule='conv', currentTask=0;
+
+// ===== 日志与节流 =====
+function logEvent(e){
+  e.time=new Date().toISOString();
+  events.push(e);
+  const el=document.getElementById('eventLog');
+  if(el) el.textContent = JSON.stringify(events.slice(-100), null, 2);
+  saveEventPersistent(e).catch(()=>{});
+}
+function logEventThrottled(e, key, ms=800){
+  logEventThrottled._t = logEventThrottled._t || {};
+  const now = Date.now();
+  if(logEventThrottled._t[key] && now - logEventThrottled._t[key] < ms) return;
+  logEventThrottled._t[key] = now;
+  logEvent(e);
+}
+function navActive(btn){if(!btn)return;document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}
+function showPage(id,btn){
+  document.querySelectorAll('main>section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  navActive(btn);
+  if(id==='teacher'){ refreshTeacherView(); }
+}
+function openModule(key,btn){
+  showPage('module',btn);currentModule=key;currentTask=0;renderModule();
+  logEvent({type:'module_open',module:key});
+}
+function typeset(){if(window.MathJax) MathJax.typesetPromise();}
+
+const modules={
+conv:{
+ title:'卷积与LTI时域响应智能体',
+ desc:'重点解决“卷积是什么、如何图解、为什么卷积就是LTI系统零状态响应”的核心问题，并区分连续时间卷积与离散时间卷积。',
+ tasks:[
+  {name:'任务1：连续时间卷积图解',kind:'ctconv'},
+  {name:'任务2：离散时间卷积',kind:'dtconv'},
+  {name:'任务3：卷积与零状态响应',kind:'zs'}
+ ]
+},
+fourier:{
+ title:'傅里叶变换与频谱智能体',
+ desc:'建立时域变化、频谱变化与系统频率响应之间的联系。',
+ tasks:[{name:'任务1：矩形脉冲与频谱',kind:'rectft'},{name:'任务2：时移与相位谱',kind:'timeshift'}]
+},
+sampling:{
+ title:'抽样与混叠智能体',
+ desc:'通过频谱副本的动态变化理解奈奎斯特条件和混叠。',
+ tasks:[{name:'任务1：采样频率与频谱复制',kind:'sampling'}]
+},
+laplace:{
+ title:'拉普拉斯与S域系统智能体',
+ desc:'从微分方程建立系统函数，并用S域方法分析系统响应。',
+ tasks:[{name:'任务1：系统函数与极点',kind:'laplace'}]
+},
+poles:{
+ title:'零极点与系统特性智能体',
+ desc:'通过极点位置变化观察自然响应、稳定性和频率响应。',
+ tasks:[{name:'任务1：极点位置与自然响应',kind:'pole'}]
+},
+z:{
+ title:'Z变换与离散系统智能体',
+ desc:'从差分方程到H(z)、ROC和单位圆频率响应。',
+ tasks:[{name:'任务1：ROC与稳定性',kind:'zroc'}]
+}
+};
+
+function renderModule(){
+ const m=modules[currentModule];
+ document.getElementById('moduleTitle').textContent=m.title;
+ document.getElementById('moduleDesc').textContent=m.desc;
+ document.getElementById('taskList').innerHTML=m.tasks.map((t,i)=>`<div class="task ${i===currentTask?'active':''}" onclick="selectTask(${i})">${t.name}</div>`).join('');
+ renderTask();
+}
+function selectTask(i){currentTask=i;renderModule();logEvent({type:'task_select',module:currentModule,task:i})}
+function renderTask(){
+ const kind=modules[currentModule].tasks[currentTask].kind;
+ const renderers={ctconv:renderCTConv,dtconv:renderDTConv,zs:renderZS,rectft:renderRectFT,timeshift:renderTimeShift,sampling:renderSampling,laplace:renderLaplace,pole:renderPole,zroc:renderZROC};
+ renderers[kind]();
+ typeset();
+}
+function setHint(html){document.getElementById('hintPanel').innerHTML=html}
+function addRecord(title,body){
+ records.push({module:currentModule,title,body,time:new Date().toLocaleString()});
+ renderRecords();
+}
+function renderRecords(){
+ document.getElementById('recordPanel').innerHTML=records.filter(r=>r.module===currentModule).slice(-8).map(r=>`<div class="qbox"><b>${r.title}</b><div class="muted">${r.time}</div><div>${r.body}</div></div>`).join('') || '<div class="muted">暂无记录。</div>';
+}
+
+function basicCanvas(id,title){
+ return `<div class="plot"><div class="title">${title}</div><canvas id="${id}" width="900" height="260"></canvas></div>`;
+}
+function axis(ctx,w,h,xmin,xmax,ymin,ymax){
+ ctx.clearRect(0,0,w,h);ctx.strokeStyle='#cbd5e1';ctx.lineWidth=1;
+ const X=x=>(x-xmin)/(xmax-xmin)*w, Y=y=>h-(y-ymin)/(ymax-ymin)*h;
+ ctx.beginPath();ctx.moveTo(0,Y(0));ctx.lineTo(w,Y(0));ctx.moveTo(X(0),0);ctx.lineTo(X(0),h);ctx.stroke();
+ return {X,Y};
+}
+function niceTick(v){
+ if(Math.abs(v)<1e-10)return '0';
+ const a=Math.abs(v);return a>=10?String(Number(v.toFixed(1))):a>=1?String(Number(v.toFixed(2))):String(Number(v.toFixed(3)));
+}
+function annotateAxis(ctx,map,w,h,xmin,xmax,ymin,ymax,xLabel='t (s)',yLabel=''){
+ ctx.save();ctx.font='12px Arial';ctx.fillStyle='#475569';ctx.strokeStyle='#94a3b8';ctx.lineWidth=1;
+ const y0=(ymin<=0&&ymax>=0)?map.Y(0):h-24, x0=(xmin<=0&&xmax>=0)?map.X(0):28;
+ const xticks=5;
+ for(let i=0;i<=xticks;i++){
+   const x=xmin+(xmax-xmin)*i/xticks,px=map.X(x);
+   if(y0>=0&&y0<=h){ctx.beginPath();ctx.moveTo(px,y0-4);ctx.lineTo(px,y0+4);ctx.stroke();}
+   const lab=niceTick(x);ctx.fillText(lab,Math.max(2,Math.min(w-28,px-7)),Math.min(h-4,Math.max(13,y0+17)));
+ }
+ const yticks=4;
+ for(let i=0;i<=yticks;i++){
+   const y=ymin+(ymax-ymin)*i/yticks,py=map.Y(y);
+   if(x0>=0&&x0<=w){ctx.beginPath();ctx.moveTo(x0-4,py);ctx.lineTo(x0+4,py);ctx.stroke();}
+   if(Math.abs(y)>1e-10)ctx.fillText(niceTick(y),Math.max(4,Math.min(w-48,x0+6)),Math.max(12,Math.min(h-4,py-3)));
+ }
+ if(xmin<=0&&xmax>=0&&ymin<=0&&ymax>=0){ctx.fillStyle='#111827';ctx.font='bold 12px Arial';ctx.fillText('0',Math.max(4,x0+6),Math.min(h-4,y0+16));}
+ ctx.fillStyle='#111827';ctx.font='bold 12px Arial';ctx.fillText(xLabel,Math.max(4,w-58),Math.max(14,Math.min(h-6,y0-8)));
+ if(yLabel){ctx.save();ctx.translate(Math.max(14,x0+18),18);ctx.rotate(-Math.PI/2);ctx.fillText(yLabel,0,0);ctx.restore();}
+ ctx.restore();
+}
+function markXValue(ctx,map,w,h,x,y0,label){
+ const px=map.X(x);ctx.save();ctx.strokeStyle='rgba(220,38,38,.55)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(px,8);ctx.lineTo(px,h-8);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#b91c1c';ctx.font='bold 12px Arial';ctx.fillText(label,Math.max(4,Math.min(w-92,px+5)),Math.max(16,Math.min(h-6,y0+34)));ctx.restore();
+}
+function drawRect(ctx,map,a,b,amp=1,color='#2563eb'){
+ ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();
+ ctx.moveTo(map.X(a),map.Y(0));ctx.lineTo(map.X(a),map.Y(amp));ctx.lineTo(map.X(b),map.Y(amp));ctx.lineTo(map.X(b),map.Y(0));ctx.stroke();
+}
+function drawPolyline(ctx,map,pts,color='#2563eb'){
+ ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(map.X(p[0]),map.Y(p[1])):ctx.moveTo(map.X(p[0]),map.Y(p[1])));ctx.stroke();
+}
+
+function renderCTConv(){
+ document.getElementById('paramPanel').innerHTML=`
+ <div class="field"><label>x(t) 类型</label><select id="xType" onchange="drawCTConv()"><option value="rect">矩形脉冲</option><option value="tri">三角脉冲</option></select></div>
+ <div class="field"><label>h(t) 类型</label><select id="hType" onchange="drawCTConv()"><option value="rect">矩形脉冲</option><option value="tri">三角脉冲</option></select></div>
+ <div class="field"><label>平移参数 t：<span id="tShow">0.00</span></label><input id="tSlider" type="range" min="-1.5" max="2.5" step="0.02" value="0" oninput="drawCTConv()"></div>
+ <div class="field">
+   <label>第二行显示</label>
+   <select id="hStage" onchange="drawCTConv()">
+     <option value="original">h(τ)</option>
+     <option value="flip">h(-τ)</option>
+     <option value="shift" selected>h(t-τ)</option>
+     <option value="all">三者叠加对照</option>
+   </select>
+ </div>
+ <button class="btn ghost" onclick="resetCT()">恢复默认</button>`;
+ document.getElementById('knowledgePanel').innerHTML=`
+ <p>连续时间卷积定义：</p>
+ \\[
+ y(t)=(x\\ast h)(t)
+ =\\int_{-\\infty}^{\\infty}x(\\tau)\\,h(t-\\tau)\\,\\mathrm{d}\\tau
+ \\]
+ <p>任意输入信号可表示为冲激信号的连续叠加：</p>
+ \\[
+ x(t)=\\int_{-\\infty}^{\\infty}x(\\tau)\\,\\delta(t-\\tau)\\,\\mathrm{d}\\tau
+ \\]
+ <p>对于LTI系统，若单位冲激响应为 \\(h(t)\\)，则在零初始条件下：</p>
+ \\[
+ y_{\\mathrm{zs}}(t)=(x\\ast h)(t)
+ \\]
+ <div class="info"><b>核心关系：</b>卷积给出LTI系统的零状态响应；若系统存在非零初始条件，还需叠加零输入响应。</div>`;
+ document.getElementById('vizPanel').innerHTML=`
+ <div class="plot"><div class="title">第一行：输入信号 x(τ)</div><canvas id="cRow1" width="1000" height="210"></canvas></div>
+ <div class="plot" style="margin-top:10px"><div class="title">第二行：h(τ) → h(-τ) → h(t-τ)</div><canvas id="cRow2" width="1000" height="230"></canvas></div>
+ <div class="plot" style="margin-top:10px"><div class="title">第三行：x(τ)h(t-τ)、重叠面积与卷积结果 y(t)</div><canvas id="cRow3" width="1000" height="300"></canvas></div>
+ <div id="ctState" class="info"></div>`;
+ document.getElementById('questionPanel').innerHTML=`
+ <div class="qbox"><b>观察题：</b>对于两个宽度为1、高度为1的矩形脉冲，当 \\(0<t<1\\) 时，\\(y(t)\\) 应为多少？</div>
+ <label class="option"><input type="radio" name="ctq" value="0"> 0</label>
+ <label class="option"><input type="radio" name="ctq" value="t"> t</label>
+ <label class="option"><input type="radio" name="ctq" value="1-t"> 1-t</label>
+ <label class="option"><input type="radio" name="ctq" value="1"> 1</label>
+ <button class="btn" onclick="submitCTQ()">提交判断</button><div id="ctfb"></div>
+ <hr>
+ <div class="qbox"><b>练习：</b>若 \\(x(t)\\) 支撑在 \\([0,1]\\)，\\(h(t)\\) 支撑在 \\([0,2]\\)，请输入卷积结果的非零支撑区间。</div>
+ <input id="ctans" type="text" placeholder="例如：[0,3]"><button class="btn" onclick="submitCTAns()">提交练习</button><div id="ctansfb"></div>`;
+ setHint('拖动 t 时只观察三行：第一行是固定的 x(τ)；第二行看 h(τ) 如何翻转、再随 t 平移；第三行看重叠区域如何决定当前积分值 y(t)。');
+ renderRecords();setTimeout(drawCTConv,50);
+}
+function sigVal(type,x){
+ if(type==='rect') return (x>=0&&x<=1)?1:0;
+ if(type==='tri') return (x>=0&&x<=1)?(1-Math.abs(2*x-1)):0;
+ return 0;
+}
+function drawSignalCanvas(id,fn,xmin=-1.5,xmax=2.5){
+ const c=document.getElementById(id),ctx=c.getContext('2d'),m=axis(ctx,c.width,c.height,xmin,xmax,-.2,1.3);
+ const pts=[];for(let i=0;i<=700;i++){const x=xmin+(xmax-xmin)*i/700;pts.push([x,fn(x)])}drawPolyline(ctx,m,pts);
+}
+// 缓存连续卷积输出曲线，仅在 x/h 类型变化时重算
+let _ctOutCache={key:'',pts:null};
+function getCTOutputCurve(xt,ht,xmin,xmax){
+ const key=xt+'|'+ht;
+ if(_ctOutCache.key===key && _ctOutCache.pts) return _ctOutCache.pts;
+ const out=[];
+ for(let i=0;i<=500;i++){
+   const tt=xmin+(xmax-xmin)*i/500;
+   let s=0;
+   for(let k=0;k<=500;k++){
+     const tau=xmin+(xmax-xmin)*k/500;
+     s+=sigVal(xt,tau)*sigVal(ht,tt-tau)*((xmax-xmin)/500);
+   }
+   out.push([tt,s]);
+ }
+ _ctOutCache={key,pts:out};
+ return out;
+}
+function drawCTConv(){
+ const t=Number(document.getElementById('tSlider').value);
+ const xt=document.getElementById('xType').value;
+ const ht=document.getElementById('hType').value;
+ const stage=document.getElementById('hStage').value;
+ document.getElementById('tShow').textContent=t.toFixed(2);
+
+ const xmin=-1.5,xmax=2.5;
+
+ // Row 1: x(tau)
+ {
+   const c=document.getElementById('cRow1'),ctx=c.getContext('2d'),m=axis(ctx,c.width,c.height,xmin,xmax,-0.2,1.35);
+   const pts=[];for(let i=0;i<=800;i++){const x=xmin+(xmax-xmin)*i/800;pts.push([x,sigVal(xt,x)])}
+   drawPolyline(ctx,m,pts,'#2563eb');
+   ctx.fillStyle='#111827';ctx.font='14px Arial';ctx.fillText('x(τ)',16,20);
+ }
+
+ // Row 2: original / flip / shift in ONE panel
+ {
+   const c=document.getElementById('cRow2'),ctx=c.getContext('2d'),m=axis(ctx,c.width,c.height,xmin,xmax,-0.2,1.35);
+   const plot=(fn,color,dash,label,yLabel)=>{
+     ctx.save();ctx.setLineDash(dash);const pts=[];for(let i=0;i<=800;i++){const x=xmin+(xmax-xmin)*i/800;pts.push([x,fn(x)])}
+     drawPolyline(ctx,m,pts,color);ctx.restore();
+     ctx.fillStyle=color;ctx.font='13px Arial';ctx.fillText(label,18,yLabel);
+   };
+   if(stage==='original'){
+      plot(x=>sigVal(ht,x),'#64748b',[],'h(τ)',20);
+   }else if(stage==='flip'){
+      plot(x=>sigVal(ht,-x),'#7c3aed',[],'h(-τ)',20);
+   }else if(stage==='shift'){
+      plot(x=>sigVal(ht,t-x),'#dc2626',[],'h(t-τ)',20);
+   }else{
+      plot(x=>sigVal(ht,x),'#64748b',[6,5],'h(τ)',20);
+      plot(x=>sigVal(ht,-x),'#7c3aed',[3,4],'h(-τ)',38);
+      plot(x=>sigVal(ht,t-x),'#dc2626',[],'h(t-τ)',56);
+   }
+   ctx.strokeStyle='rgba(220,38,38,.25)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(m.X(t),0);ctx.lineTo(m.X(t),c.height);ctx.stroke();ctx.setLineDash([]);
+ }
+
+ // Row 3: product + current integral + output curve in same panel
+ let curr=0,N=1000;
+ {
+   const c=document.getElementById('cRow3'),ctx=c.getContext('2d');
+   ctx.clearRect(0,0,c.width,c.height);
+
+   const leftW=Math.floor(c.width*0.64), gap=35, rightX=leftW+gap, rightW=c.width-rightX-10;
+   const m1=axisPartial(ctx,0,0,leftW,c.height,xmin,xmax,-0.2,1.35);
+   const prodPts=[];
+   for(let i=0;i<=800;i++){
+      const tau=xmin+(xmax-xmin)*i/800;
+      const v=sigVal(xt,tau)*sigVal(ht,t-tau);
+      prodPts.push([tau,v]);
+   }
+   drawPolylinePartial(ctx,m1,prodPts,'#2563eb');
+
+   ctx.fillStyle='rgba(37,99,235,.20)';
+   ctx.beginPath();
+   let started=false;
+   for(let i=0;i<=800;i++){
+      const tau=xmin+(xmax-xmin)*i/800;
+      const v=sigVal(xt,tau)*sigVal(ht,t-tau);
+      if(v>0 && !started){ctx.moveTo(m1.X(tau),m1.Y(0));started=true;}
+      if(started) ctx.lineTo(m1.X(tau),m1.Y(v));
+   }
+   if(started){
+      for(let i=800;i>=0;i--){
+        const tau=xmin+(xmax-xmin)*i/800;
+        const v=sigVal(xt,tau)*sigVal(ht,t-tau);
+        if(v>0){ctx.lineTo(m1.X(tau),m1.Y(0));break;}
+      }
+      ctx.closePath();ctx.fill();
+   }
+
+   for(let k=0;k<=N;k++){
+      const tau=xmin+(xmax-xmin)*k/N;
+      curr+=sigVal(xt,tau)*sigVal(ht,t-tau)*((xmax-xmin)/N);
+   }
+
+   ctx.fillStyle='#111827';ctx.font='13px Arial';ctx.fillText('乘积 x(τ)h(t-τ)',14,20);
+   ctx.fillText('当前积分面积 ≈ '+curr.toFixed(3),14,40);
+
+   ctx.strokeStyle='#e5e7eb';ctx.beginPath();ctx.moveTo(leftW+gap/2,10);ctx.lineTo(leftW+gap/2,c.height-10);ctx.stroke();
+
+   const m2=axisPartial(ctx,rightX,0,rightW,c.height,-1.5,2.5,-0.2,1.35);
+   const out=getCTOutputCurve(xt,ht,xmin,xmax);
+   drawPolylinePartial(ctx,m2,out,'#16a34a');
+   ctx.fillStyle='#dc2626';ctx.beginPath();ctx.arc(m2.X(t),m2.Y(curr),5,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#111827';ctx.fillText('卷积输出 y(t)',rightX+8,20);
+   ctx.fillText('红点：当前 t',rightX+8,40);
+ }
+
+ document.getElementById('ctState').innerHTML=
+   `当前 <b>t=${t.toFixed(2)}</b>。第二行中的 <b>h(t-τ)</b> 随 t 平移；第三行左侧显示乘积及其面积，右侧红点显示卷积曲线上的当前值 <b>y(t)≈${curr.toFixed(3)}</b>。`;
+ logEventThrottled({type:'ct_drag_3row',t,value:curr,stage}, 'ct_drag');
+}
+
+function axisPartial(ctx,x0,y0,w,h,xmin,xmax,ymin,ymax){
+ const X=x=>x0+(x-xmin)/(xmax-xmin)*w;
+ const Y=y=>y0+h-(y-ymin)/(ymax-ymin)*h;
+ ctx.strokeStyle='#cbd5e1';ctx.lineWidth=1;
+ ctx.beginPath();
+ if(ymin<=0&&ymax>=0){ctx.moveTo(x0,Y(0));ctx.lineTo(x0+w,Y(0));}
+ if(xmin<=0&&xmax>=0){ctx.moveTo(X(0),y0);ctx.lineTo(X(0),y0+h);}
+ ctx.stroke();
+ return {X,Y};
+}
+function drawPolylinePartial(ctx,map,pts,color){
+ ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();
+ pts.forEach((p,i)=>i?ctx.lineTo(map.X(p[0]),map.Y(p[1])):ctx.moveTo(map.X(p[0]),map.Y(p[1])));
+ ctx.stroke();
+}
+function resetCT(){document.getElementById('xType').value='rect';document.getElementById('hType').value='rect';document.getElementById('tSlider').value=0;document.getElementById('hStage').value='shift';drawCTConv()}
+function submitCTQ(){
+ const v=document.querySelector('input[name=ctq]:checked');if(!v)return alert('请选择答案');
+ const ok=v.value==='t';
+ document.getElementById('ctfb').innerHTML=ok?'<div class="good">正确：0&lt;t&lt;1 时，重叠长度为 t，因此 y(t)=t。</div>':'<div class="warn">再看⑤：此时重叠区间长度从0线性增加到1，所以卷积值也线性增加。</div>';
+ setHint(ok?'判断正确。可以继续做支撑区间练习。':'提示：不要直接背公式，先看两个信号的支撑区间有多长的重叠。');
+ addRecord('连续卷积判断',ok?'回答正确：y(t)=t':'回答错误，已触发针对性提示');
+ logEvent({type:'ct_question',correct:ok});
+ if(typeof saveSubmissionPersistent==='function')saveSubmissionPersistent({
+   module:'卷积与LTI',task:'连续时间卷积',question_id:'ct_concept_01',
+   answer:v.value,is_correct:ok,error_type:ok?'':'重叠区间理解错误'
+ });
+}
+function submitCTAns(){
+ const a=document.getElementById('ctans').value.replace(/\s/g,'');
+ const ok=/\[?0[,，]3\]?/.test(a)||a.includes('0到3')||a.includes('0<t<3')||a.includes('0≤t≤3');
+ document.getElementById('ctansfb').innerHTML=ok?'<div class="good">正确：卷积支撑区间为 [0,3]。</div>':'<div class="warn">提示：卷积支撑区间等于两个支撑区间端点相加：[0+0,1+2]=[0,3]。</div>';
+ addRecord('连续卷积练习',ok?'支撑区间判断正确':'支撑区间判断错误');
+ logEvent({type:'ct_practice',answer:a,correct:ok});
+ if(typeof saveSubmissionPersistent==='function')saveSubmissionPersistent({
+   module:'卷积与LTI',task:'连续时间卷积',question_id:'ct_support_01',
+   answer:a,is_correct:ok,error_type:ok?'':'支撑区间求和错误'
+ });
+}
+
+function parseSeq(id){
+ const raw=(document.getElementById(id)?.value||'').trim();
+ const vals=raw.split(/[\s,，]+/).filter(Boolean).map(Number);
+ return vals.length && vals.every(Number.isFinite) ? vals : [0];
+}
+function convDiscrete(x,h){
+ const y=Array(x.length+h.length-1).fill(0);
+ for(let i=0;i<x.length;i++) for(let j=0;j<h.length;j++) y[i+j]+=x[i]*h[j];
+ return y;
+}
+function stemPlot(ctx,map,index,value,color='#2563eb',radius=4){
+ ctx.strokeStyle=color;ctx.lineWidth=2;
+ ctx.beginPath();ctx.moveTo(map.X(index),map.Y(0));ctx.lineTo(map.X(index),map.Y(value));ctx.stroke();
+ ctx.fillStyle=color;ctx.beginPath();ctx.arc(map.X(index),map.Y(value),radius,0,Math.PI*2);ctx.fill();
+}
+function renderDTConv(){
+ document.getElementById('paramPanel').innerHTML=`
+ <div class="field"><label>输入序列 x[n]</label><input id="xSeq" type="text" value="1, 1, 1" onchange="refreshDTControls()"></div>
+ <div class="field"><label>x[n] 的起始索引</label><input id="xStart" type="number" value="0" step="1" onchange="refreshDTControls()"></div>
+ <div class="field"><label>冲激响应 h[n]</label><input id="hSeq" type="text" value="1, 2" onchange="refreshDTControls()"></div>
+ <div class="field"><label>h[n] 的起始索引</label><input id="hStart" type="number" value="0" step="1" onchange="refreshDTControls()"></div>
+ <div class="field"><label>当前输出位置 n：<span id="nShow">0</span></label><input id="nSlider" type="range" min="0" max="3" step="1" value="0" oninput="drawDTConv()"></div>
+ <button class="btn ghost" onclick="resetDT()">恢复默认</button>`;
+ document.getElementById('knowledgePanel').innerHTML=`
+ <p>离散时间卷积定义：</p>
+ \\[y[n]=(x*h)[n]=\\sum_{k=-\\infty}^{\\infty}x[k]\\,h[n-k]\\]
+ <div class="info"><b>观察重点：</b>与连续卷积完全对应：先把 \\(h[k]\\) 翻转为 \\(h[-k]\\)，再平移得到 \\(h[n-k]\\)，与 \\(x[k]\\) 逐点相乘，最后对所有 k 求和。</div>`;
+ document.getElementById('vizPanel').innerHTML=`
+ <div class="plot"><div class="title">第一行：输入序列 x[k]</div><canvas id="dtRow1" width="1000" height="210"></canvas></div>
+ <div class="plot" style="margin-top:10px">
+   <div class="title">第二行：h[k] → h[-k] → h[n-k]</div>
+   <div class="legend"><span style="--c:#64748b">h[k]</span><span style="--c:#7c3aed">h[-k]</span><span style="--c:#dc2626">h[n-k]</span></div>
+   <canvas id="dtRow2" width="1000" height="230"></canvas>
+ </div>
+ <div class="plot" style="margin-top:10px"><div class="title">第三行：逐点乘积 x[k]h[n-k]、求和与完整卷积 y[n]</div><canvas id="dtRow3" width="1000" height="300"></canvas></div>
+ <div id="dtState" class="info"></div>`;
+ document.getElementById('questionPanel').innerHTML=`
+ <div class="qbox"><b>观察题：</b>拖动 n，观察哪些 k 位置发生重叠。当前卷积值等于这些重叠项乘积的什么运算？</div>
+ <label class="option"><input type="radio" name="dtConcept" value="sum"> 求和</label>
+ <label class="option"><input type="radio" name="dtConcept" value="max"> 取最大值</label>
+ <label class="option"><input type="radio" name="dtConcept" value="avg"> 求平均</label>
+ <button class="btn" onclick="submitDTConcept()">提交判断</button><div id="dtConceptFb"></div>
+ <hr>
+ <div class="qbox"><b>计算练习：</b>请输入当前 x[n] 与 h[n] 的完整卷积结果。</div>
+ <input id="dtans" type="text" placeholder="例如：1, 3, 3, 2">
+ <button class="btn" onclick="submitDTAns()">提交卷积结果</button><div id="dtfb"></div>`;
+ setHint('先看第二行：灰色是 h[k]，紫色是翻转后的 h[-k]，红色是当前位置对应的 h[n-k]。然后看第三行左侧哪些样点重叠，并把乘积求和。');
+ renderRecords();setTimeout(refreshDTControls,50);
+}
+function refreshDTControls(){
+ const x=parseSeq('xSeq'),h=parseSeq('hSeq');
+ const xs=Number(document.getElementById('xStart').value)||0, hs=Number(document.getElementById('hStart').value)||0;
+ const yStart=xs+hs, yEnd=yStart+x.length+h.length-2;
+ const s=document.getElementById('nSlider');
+ s.min=yStart;s.max=yEnd;
+ if(Number(s.value)<yStart||Number(s.value)>yEnd)s.value=yStart;
+ drawDTConv();
+}
+function resetDT(){
+ document.getElementById('xSeq').value='1, 1, 1';document.getElementById('hSeq').value='1, 2';
+ document.getElementById('xStart').value=0;document.getElementById('hStart').value=0;refreshDTControls();
+}
+function drawDTConv(){
+ const x=parseSeq('xSeq'),h=parseSeq('hSeq');
+ const xs=Number(document.getElementById('xStart').value)||0, hs=Number(document.getElementById('hStart').value)||0;
+ const n=Number(document.getElementById('nSlider').value);document.getElementById('nShow').textContent=n;
+ const xIdx=x.map((_,i)=>xs+i),hIdx=h.map((_,i)=>hs+i),flippedIdx=hIdx.map(k=>-k),shiftedIdx=hIdx.map(k=>n-k);
+ const y=convDiscrete(x,h),yStart=xs+hs,yIdx=y.map((_,i)=>yStart+i);
+ const allIdx=[...xIdx,...hIdx,...flippedIdx,...shiftedIdx,...yIdx];
+ const xmin=Math.min(...allIdx)-1,xmax=Math.max(...allIdx)+1;
+ const maxAmp=Math.max(1,...x.map(Math.abs),...h.map(Math.abs),...y.map(Math.abs));
+ const ymin=-maxAmp*.25,ymax=maxAmp*1.35;
+ {
+   const c=document.getElementById('dtRow1'),ctx=c.getContext('2d'),m=axis(ctx,c.width,c.height,xmin,xmax,ymin,ymax);
+   x.forEach((v,i)=>stemPlot(ctx,m,xs+i,v,'#2563eb'));ctx.fillStyle='#111827';ctx.font='13px Arial';ctx.fillText('x[k]',14,18);
+ }
+ {
+   const c=document.getElementById('dtRow2'),ctx=c.getContext('2d'),m=axis(ctx,c.width,c.height,xmin,xmax,ymin,ymax);
+   h.forEach((v,i)=>stemPlot(ctx,m,hs+i,v,'#64748b',3));h.forEach((v,i)=>stemPlot(ctx,m,-(hs+i),v,'#7c3aed',3));h.forEach((v,i)=>stemPlot(ctx,m,n-(hs+i),v,'#dc2626',5));
+   ctx.strokeStyle='rgba(220,38,38,.25)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(m.X(n),0);ctx.lineTo(m.X(n),c.height);ctx.stroke();ctx.setLineDash([]);
+ }
+ let sum=0,terms=[];
+ {
+   const c=document.getElementById('dtRow3'),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);
+   const leftW=Math.floor(c.width*.62),gap=35,rightX=leftW+gap,rightW=c.width-rightX-10;
+   const m1=axisPartial(ctx,0,0,leftW,c.height,xmin,xmax,ymin,ymax);
+   x.forEach((vx,i)=>{const k=xs+i,hj=n-k,hi=hj-hs;const vh=(Number.isInteger(hi)&&hi>=0&&hi<h.length)?h[hi]:0;const p=vx*vh;if(Math.abs(p)>1e-12)terms.push(`${vx}×${vh}`);sum+=p;stemPlot(ctx,m1,k,p,'#2563eb',5);});
+   ctx.fillStyle='#111827';ctx.font='13px Arial';ctx.fillText('x[k]h[n-k]',14,18);ctx.fillText(`当前求和 y[${n}] = ${sum.toFixed(3)}`,14,38);
+   ctx.strokeStyle='#e5e7eb';ctx.beginPath();ctx.moveTo(leftW+gap/2,10);ctx.lineTo(leftW+gap/2,c.height-10);ctx.stroke();
+   const m2=axisPartial(ctx,rightX,0,rightW,c.height,Math.min(...yIdx)-1,Math.max(...yIdx)+1,ymin,ymax);
+   y.forEach((v,i)=>stemPlot(ctx,m2,yStart+i,v,(yStart+i)===n?'#dc2626':'#16a34a',(yStart+i)===n?6:4));ctx.fillStyle='#111827';ctx.fillText('完整卷积 y[n]',rightX+8,18);
+ }
+ document.getElementById('dtState').innerHTML=`当前 n=<b>${n}</b>；有效重叠乘积：<b>${terms.length?terms.join(' + '):'无'}</b>；因此 <b>y[${n}]=${sum.toFixed(3)}</b>。完整卷积序列为 <b>[${y.map(v=>Number(v.toFixed(4))).join(', ')}]</b>，起始索引为 <b>${yStart}</b>。`;
+ logEventThrottled({type:'dt_drag',n,value:sum,x,h,x_start:xs,h_start:hs}, 'dt_drag');
+}
+function submitDTConcept(){
+ const v=document.querySelector('input[name=dtConcept]:checked');if(!v)return alert('请选择答案');const ok=v.value==='sum';
+ document.getElementById('dtConceptFb').innerHTML=ok?'<div class="good">正确。离散卷积就是把所有重叠位置的逐点乘积相加。</div>':'<div class="warn">再看第三行：每个重叠位置先相乘，最终需要对 k 求和。</div>';
+ addRecord('离散卷积概念判断',ok?'正确理解乘积求和':'卷积求和概念错误');if(typeof saveSubmissionPersistent==='function')saveSubmissionPersistent({module:'卷积与LTI',task:'离散时间卷积',question_id:'dt_concept_01',answer:v.value,is_correct:ok,error_type:ok?'':'未理解逐点乘积后求和'});
+}
+function submitDTAns(){
+ const x=parseSeq('xSeq'),h=parseSeq('hSeq'),target=convDiscrete(x,h);const ans=(document.getElementById('dtans').value||'').split(/[\s,，\[\]]+/).filter(Boolean).map(Number);
+ const ok=ans.length===target.length&&ans.every((v,i)=>Math.abs(v-target[i])<1e-6);
+ document.getElementById('dtfb').innerHTML=ok?`<div class="good">正确：完整卷积结果为 [${target.join(', ')}]。</div>`:`<div class="warn">结果还不正确。请拖动 n 逐点观察第三行，正确序列应包含 ${target.length} 个样点。</div>`;
+ addRecord('离散卷积计算',ok?'完整卷积序列正确':'完整卷积序列错误');if(typeof saveSubmissionPersistent==='function')saveSubmissionPersistent({module:'卷积与LTI',task:'离散时间卷积',question_id:'dt_conv_full_01',answer:ans.join(','),is_correct:ok,error_type:ok?'':'离散卷积计算错误'});
+}
+
+function rlcImpulse(t,R,L,C){
+ if(t<0)return 0;const w0=Math.sqrt(1/(L*C)),alpha=R/(2*L),eps=1e-8;
+ if(alpha<w0-eps){const wd=Math.sqrt(w0*w0-alpha*alpha);return (w0*w0/wd)*Math.exp(-alpha*t)*Math.sin(wd*t);}
+ if(Math.abs(alpha-w0)<=eps)return w0*w0*t*Math.exp(-alpha*t);
+ const beta=Math.sqrt(alpha*alpha-w0*w0),r1=-alpha+beta,r2=-alpha-beta;return (w0*w0/(r1-r2))*(Math.exp(r1*t)-Math.exp(r2*t));
+}
+function zsInput(t,type,A,width){if(t<0)return 0;if(type==='step')return A;if(type==='pulse')return t<=width?A:0;if(type==='exp')return A*Math.exp(-t);return 0;}
+
+// 缓存 ZS 序列，仅在 R/L/C/输入类型/幅值/脉宽/tmax 变化时重算
+let _zsSeriesCache={key:'',data:null};
+function getZSSeries(R,L,C,type,A,width,tmax){
+ const key=[R,L,C,type,A,width,tmax].join('|');
+ if(_zsSeriesCache.key===key && _zsSeriesCache.data) return _zsSeriesCache.data;
+ const N=1200, dt=tmax/N;
+ const ts=Array.from({length:N+1},(_,i)=>i*dt);
+ const xv=ts.map(t=>zsInput(t,type,A,width));
+ const hv=ts.map(t=>rlcImpulse(t,R,L,C));
+ const yv=Array(N+1).fill(0);
+ for(let i=0;i<=N;i++){let s=0;for(let k=0;k<=i;k++)s+=xv[k]*hv[i-k];yv[i]=s*dt;}
+ const data={N,dt,ts,xv,hv,yv,tmax};
+ _zsSeriesCache={key,data};
+ return data;
+}
+
+function renderZS(){
+ document.getElementById('paramPanel').innerHTML=`
+ <div class="field"><label>电阻 R (Ω)</label><input id="rlcR" type="number" value="1" min="0.1" step="0.1" onchange="drawZS()"></div>
+ <div class="field"><label>电感 L (H)</label><input id="rlcL" type="number" value="1" min="0.1" step="0.1" onchange="drawZS()"></div>
+ <div class="field"><label>电容 C (F)</label><input id="rlcC" type="number" value="1" min="0.1" step="0.1" onchange="drawZS()"></div>
+ <div class="field"><label>输入 x(t)</label><select id="zsInputType" onchange="togglePulseWidth();drawZS()"><option value="step">单位阶跃</option><option value="pulse">矩形脉冲</option><option value="exp">衰减指数</option></select></div>
+ <div class="field"><label>输入幅值 A</label><input id="zsAmp" type="number" value="1" step="0.1" onchange="drawZS()"></div>
+ <div id="pulseWidthField" class="field hidden"><label>脉冲宽度 T (s)</label><input id="zsWidth" type="number" value="2" min="0.1" step="0.1" onchange="drawZS()"></div>
+ <div class="field"><label>观察时刻 t：<span id="zsTShow">2.00</span> s</label><input id="zsT" type="range" min="0" max="12" step="0.05" value="2" oninput="drawZS()"></div>`;
+ document.getElementById('knowledgePanel').innerHTML=`
+ <p><b>二阶连续 LTI 系统案例：串联 RLC 电路，输出取电容两端电压。</b></p>
+ <div class="circuit-wrap"><svg class="circuit-svg" viewBox="0 0 760 230" aria-label="串联RLC电路">
+ <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#2563eb"/></marker></defs>
+ <line x1="90" y1="55" x2="190" y2="55" stroke="#111827" stroke-width="3"/><path d="M190 55 l12 -18 l22 36 l22 -36 l22 36 l22 -36 l12 18" fill="none" stroke="#111827" stroke-width="3"/><text x="250" y="30" font-size="18">R</text>
+ <line x1="322" y1="55" x2="360" y2="55" stroke="#111827" stroke-width="3"/><path d="M360 55 c10 -28 22 -28 32 0 c10 -28 22 -28 32 0 c10 -28 22 -28 32 0 c10 -28 22 -28 32 0" fill="none" stroke="#111827" stroke-width="3"/><text x="420" y="28" font-size="18">L</text>
+ <line x1="488" y1="55" x2="600" y2="55" stroke="#111827" stroke-width="3"/><line x1="600" y1="55" x2="600" y2="92" stroke="#111827" stroke-width="3"/><line x1="570" y1="92" x2="630" y2="92" stroke="#111827" stroke-width="4"/><line x1="570" y1="108" x2="630" y2="108" stroke="#111827" stroke-width="4"/><line x1="600" y1="108" x2="600" y2="170" stroke="#111827" stroke-width="3"/><text x="642" y="106" font-size="18">C</text>
+ <line x1="600" y1="170" x2="90" y2="170" stroke="#111827" stroke-width="3"/><circle cx="90" cy="112" r="34" fill="none" stroke="#111827" stroke-width="3"/><line x1="90" y1="55" x2="90" y2="78" stroke="#111827" stroke-width="3"/><line x1="90" y1="146" x2="90" y2="170" stroke="#111827" stroke-width="3"/><text x="40" y="118" font-size="17">x(t)</text><line x1="665" y1="88" x2="665" y2="148" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow)"/><text x="680" y="124" font-size="17" fill="#2563eb">y(t)=vC(t)</text>
+ </svg></div>
+ <div class="eqchain"><div class="eqstep">KVL：\\(x(t)=v_R(t)+v_L(t)+v_C(t)\\)</div><div class="eqstep">利用 \\(i(t)=C\\,\\frac{dy}{dt}\\)</div><div class="eqstep">建立微分方程：\\(LC\\,y''(t)+RC\\,y'(t)+y(t)=x(t)\\)</div></div>
+ <div class="info"><b>本任务顺序：</b>先调节 R、L、C 和输入参数，直接观察 \\(x(t)\\)、\\(h(t)\\) 与 \\(y_{zs}(t)\\) 的变化；完整求解方法放在可视化之后。第二章主线先用时域法，拉普拉斯法只作为后续章节的对照。</div>`;
+ document.getElementById('vizPanel').innerHTML=`
+ <div class="plot"><div class="title">第一行：输入 x(t)</div><canvas id="zsX" width="1000" height="210"></canvas></div>
+ <div class="plot" style="margin-top:10px"><div class="title">第二行：系统冲激响应 h(t)</div><canvas id="zsH" width="1000" height="210"></canvas></div>
+ <div class="plot" style="margin-top:10px"><div class="title">第三行：零状态响应 yzs(t)=x(t)*h(t)</div><canvas id="zsY" width="1000" height="230"></canvas></div>
+ <div class="plot" style="margin-top:10px"><div class="title">当前时刻的卷积被积函数 x(τ)h(t-τ)</div><canvas id="zsInt" width="1000" height="210"></canvas></div>
+ <div id="zsState" class="info"></div>`;
+ document.getElementById('questionPanel').innerHTML=`
+ <div class="qbox"><b>从图形回到数学模型：</b>上面的波形与当前 R、L、C 参数保持联动。下面给出两种求 \\(h(t)\\) 的方法，其中第二章以“时域法”为主。</div>
+ <details class="method-details" open><summary>方法一：时域法——由微分方程直接求 h(t)（本章主方法）</summary><div id="zsTimeDerivation" class="method-body formula">正在根据当前 R、L、C 生成时域推导……</div></details>
+ <details class="method-details"><summary>方法二：拉普拉斯法——由 H(s) 求 h(t)（后续章节对照）</summary><div id="zsLaplaceDerivation" class="method-body formula">正在根据当前 R、L、C 生成拉普拉斯域推导……</div></details>
+ <div class="info"><b>两种方法的共同终点：</b>得到同一个系统冲激响应 \\(h(t)\\) 后，零初始条件下任意输入的零状态响应为 \\[y_{zs}(t)=x(t)*h(t)=\\int_0^t x(\\tau)h(t-\\tau)\\,d\\tau.\\]</div>
+ <div class="qbox"><b>理解题1：</b>在零初始条件下，RLC 电路的输出 y(t) 与输入 x(t)、冲激响应 h(t) 的关系是什么？</div>
+ <label class="option"><input type="radio" name="zsq1" value="conv"> \\(y(t)=x(t)*h(t)\\)</label><label class="option"><input type="radio" name="zsq1" value="mul"> \\(y(t)=x(t)h(t)\\)</label><button class="btn" onclick="submitZS1()">提交</button><div id="zsfb1"></div><hr>
+ <div class="qbox"><b>理解题2：</b>若系统存在非零初始储能，仅靠卷积能得到全响应吗？</div><label class="option"><input type="radio" name="zsq2" value="yes"> 能</label><label class="option"><input type="radio" name="zsq2" value="no"> 不能，还需叠加零输入响应</label><button class="btn" onclick="submitZS2()">提交</button><div id="zsfb2"></div>`;
+ setHint('先调 R、L、C 并观察三条波形；需要解释 h(t) 的来源时，再展开图形下方的“时域法”。拉普拉斯法作为后续章节的对照方法保留。');renderRecords();togglePulseWidth();setTimeout(drawZS,50);
+}
+function togglePulseWidth(){const f=document.getElementById('pulseWidthField'),sel=document.getElementById('zsInputType');if(f&&sel)f.classList.toggle('hidden',sel.value!=='pulse');}
+function drawCurveCanvas(id,fn,tmax,cursor=null,color='#2563eb',xLabel='t (s)',yLabel=''){
+ const c=document.getElementById(id),ctx=c.getContext('2d'),values=[];for(let i=0;i<=800;i++){const t=tmax*i/800;values.push([t,fn(t)])}
+ const ys=values.map(p=>p[1]),maxAbs=Math.max(1e-6,...ys.map(Math.abs));let ymin=Math.min(-.15*maxAbs,...ys),ymax=Math.max(.15*maxAbs,...ys),pad=Math.max(.15,(ymax-ymin)*.12);ymin-=pad;ymax+=pad;
+ const m=axis(ctx,c.width,c.height,0,tmax,ymin,ymax);drawPolyline(ctx,m,values,color);annotateAxis(ctx,m,c.width,c.height,0,tmax,ymin,ymax,xLabel,yLabel);
+ if(cursor!==null){ctx.strokeStyle='rgba(220,38,38,.35)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(m.X(cursor),0);ctx.lineTo(m.X(cursor),c.height);ctx.stroke();ctx.setLineDash([]);const v=fn(cursor);ctx.fillStyle='#dc2626';ctx.beginPath();ctx.arc(m.X(cursor),m.Y(v),5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#b91c1c';ctx.font='12px Arial';ctx.fillText(`t=${cursor.toFixed(2)} s`,Math.max(4,Math.min(c.width-82,m.X(cursor)+6)),16);}return {values,map:m,ymin,ymax,ctx,canvas:c};
+}
+function updateZSTimeDerivation(R,L,C){
+ const el=document.getElementById('zsTimeDerivation');if(!el)return;
+ const w02=1/(L*C),w0=Math.sqrt(w02),alpha=R/(2*L),delta=w02-alpha*alpha,eps=1e-7;
+ const f=v=>Number(v.toFixed(4));
+ let branch='';
+ if(delta>eps){
+   const wd=Math.sqrt(delta),B=w02/wd;
+   branch=`<div><b>③ 对 t&gt;0 求齐次方程：</b>特征根为 \\(r_{1,2}=-\\alpha\\pm j\\omega_d\\)，其中 \\(\\omega_d=\\sqrt{\\omega_0^2-\\alpha^2}=${f(wd)}\\)。</div>
+   <div>\\[h(t)=e^{-\\alpha t}\u005bA\\cos(\\omega_d t)+B\\sin(\\omega_d t)\u005d,\\quad t&gt;0\\]</div>
+   <div><b>④ 代入冲激初始条件：</b>由 \\(h(0^+)=0\\) 得 \\(A=0\\)；由 \\(h'(0^+)=1/(LC)=\\omega_0^2\\) 得 \\(B=\\omega_0^2/\\omega_d=${f(B)}\\)。</div>
+   <div>\\[\\boxed{h(t)=\\frac{\\omega_0^2}{\\omega_d}e^{-\\alpha t}\\sin(\\omega_d t)u(t)=${f(B)}e^{-${f(alpha)}t}\\sin(${f(wd)}t)u(t)}\\]</div>`;
+ }else if(Math.abs(delta)<=eps){
+   branch=`<div><b>③ 对 t&gt;0 求齐次方程：</b>临界阻尼时重根 \\(r=-\\alpha=-${f(alpha)}\\)，故 \\(h(t)=(A+Bt)e^{-\\alpha t}\\)。</div>
+   <div><b>④ 代入冲激初始条件：</b>\\(h(0^+)=0\\Rightarrow A=0\\)，\\(h'(0^+)=\\omega_0^2=${f(w02)}\\Rightarrow B=\\omega_0^2\\)。</div>
+   <div>\\[\\boxed{h(t)=\\omega_0^2 t e^{-\\alpha t}u(t)=${f(w02)}t e^{-${f(alpha)}t}u(t)}\\]</div>`;
+ }else{
+   const beta=Math.sqrt(alpha*alpha-w02),p1=-alpha+beta,p2=-alpha-beta,coef=w02/(p1-p2);
+   branch=`<div><b>③ 对 t&gt;0 求齐次方程：</b>两实根 \\(p_1=${f(p1)},\\ p_2=${f(p2)}\\)，故 \\(h(t)=Ae^{p_1t}+Be^{p_2t}\\)。</div>
+   <div><b>④ 代入冲激初始条件：</b>\\(h(0^+)=0\\Rightarrow A+B=0\\)；\\(h'(0^+)=\\omega_0^2=${f(w02)}\\Rightarrow A(p_1-p_2)=\\omega_0^2\\)。</div>
+   <div>\\[\\boxed{h(t)=\\frac{\\omega_0^2}{p_1-p_2}\\left(e^{p_1t}-e^{p_2t}\\right)u(t)=${f(coef)}\\left(e^{${f(p1)}t}-e^{${f(p2)}t}\\right)u(t)}\\]</div>`;
+ }
+ el.innerHTML=`<div><b>① 令输入为单位冲激：</b></div>
+ <div>\\[LC\\,h''(t)+RC\\,h'(t)+h(t)=\\delta(t)\\]</div>
+ <div><b>② 直接在 t=0 附近积分，得到冲激引起的初始跃变条件：</b></div>
+ <div>\\[h(0^-)=h'(0^-)=0,\\qquad h(0^+)=0,\\qquad h'(0^+)=\\frac{1}{LC}=${f(w02)}\\]</div>
+ <div class="muted">对 t&gt;0，右端冲激已经结束，方程变为齐次方程 \\(h''+2\\alpha h'+\\omega_0^2h=0\\)，其中 \\(\\alpha=R/(2L)=${f(alpha)}\\)，\\(\\omega_0=1/\\sqrt{LC}=${f(w0)}\\)。</div>${branch}`;
+ if(window.MathJax)MathJax.typesetPromise([el]);
+}
+function updateZSLaplaceDerivation(R,L,C){
+ const el=document.getElementById('zsLaplaceDerivation');if(!el)return;
+ const w02=1/(L*C),w0=Math.sqrt(w02),alpha=R/(2*L),delta=w02-alpha*alpha,eps=1e-7;
+ const f=v=>Number(v.toFixed(4));
+ let branch='';
+ if(delta>eps){
+   const wd=Math.sqrt(delta);
+   branch=`<div><b>③ 配方并判断阻尼：</b> \\(\\omega_d=\\sqrt{\\omega_0^2-\\alpha^2}=${f(wd)}\\)，当前为 <b>欠阻尼</b>。</div>
+   <div>\\[H(s)=\\frac{\\omega_0^2}{(s+\\alpha)^2+\\omega_d^2}\\]</div>
+   <div><b>④ 反拉普拉斯：</b></div>
+   <div>\\[\\boxed{h(t)=\\frac{\\omega_0^2}{\\omega_d}e^{-\\alpha t}\\sin(\\omega_d t)u(t)}\\]</div>`;
+ }else if(Math.abs(delta)<=eps){
+   branch=`<div><b>③ 临界阻尼：</b> \\(\\alpha=\\omega_0=${f(w0)}\\)。</div><div>\\[H(s)=\\frac{\\omega_0^2}{(s+\\alpha)^2}\\]</div><div><b>④ 反拉普拉斯：</b></div><div>\\[\\boxed{h(t)=\\omega_0^2t e^{-\\alpha t}u(t)}\\]</div>`;
+ }else{
+   const beta=Math.sqrt(alpha*alpha-w02),p1=-alpha+beta,p2=-alpha-beta;
+   branch=`<div><b>③ 过阻尼：</b>极点 \\(p_1=${f(p1)},\\ p_2=${f(p2)}\\)。</div><div>\\[H(s)=\\frac{\\omega_0^2}{(s-p_1)(s-p_2)}\\]</div><div><b>④ 部分分式展开并反拉普拉斯：</b></div><div>\\[\\boxed{h(t)=\\frac{\\omega_0^2}{p_1-p_2}\\left(e^{p_1t}-e^{p_2t}\\right)u(t)}\\]</div>`;
+ }
+ el.innerHTML=`<div><b>① 零初始条件下取拉普拉斯变换：</b></div><div>\\[(LCs^2+RCs+1)Y(s)=X(s)\\]</div>
+ <div><b>② 得到系统函数：</b></div><div>\\[H(s)=\\frac{Y(s)}{X(s)}=\\frac{1}{LCs^2+RCs+1}=\\frac{\\omega_0^2}{s^2+2\\alpha s+\\omega_0^2}\\]</div>
+ <div class="muted">这一路径放在图形之后，作为后续“拉普拉斯与 S 域系统”章节的对照方法。</div>${branch}`;
+ if(window.MathJax)MathJax.typesetPromise([el]);
+}
+let _zsDerivationKey='';
+function drawZS(){
+ const R=Math.max(.001,Number(document.getElementById('rlcR').value)||1),L=Math.max(.001,Number(document.getElementById('rlcL').value)||1),C=Math.max(.001,Number(document.getElementById('rlcC').value)||1);
+ const type=document.getElementById('zsInputType').value,A=Number(document.getElementById('zsAmp').value)||1,width=Math.max(.01,Number(document.getElementById('zsWidth')?.value)||2),tcur=Number(document.getElementById('zsT').value),tmax=Number(document.getElementById('zsT').max);document.getElementById('zsTShow').textContent=tcur.toFixed(2);
+ const {N,dt,xv,hv,yv} = getZSSeries(R,L,C,type,A,width,tmax);
+ const interp=(arr,t)=>{const q=Math.max(0,Math.min(N,t/dt)),i=Math.floor(q),f=q-i;if(i>=N)return arr[N];return arr[i]*(1-f)+arr[i+1]*f;};
+ const xPlot=drawCurveCanvas('zsX',t=>zsInput(t,type,A,width),tmax,tcur,'#2563eb','t (s)','x(t)');
+ if(type==='pulse'&&width<=tmax)markXValue(xPlot.ctx,xPlot.map,xPlot.canvas.width,xPlot.canvas.height,width,xPlot.map.Y(0),`T=${width.toFixed(2)} s`);
+ drawCurveCanvas('zsH',t=>rlcImpulse(t,R,L,C),tmax,tcur,'#7c3aed','t (s)','h(t)');drawCurveCanvas('zsY',t=>interp(yv,t),tmax,tcur,'#16a34a','t (s)','yzs(t)');
+ {const c=document.getElementById('zsInt'),ctx=c.getContext('2d'),vals=[];let integ=0;for(let i=0;i<=800;i++){const tau=tcur*i/800;vals.push([tau,zsInput(tau,type,A,width)*rlcImpulse(tcur-tau,R,L,C)]);}const maxAbs=Math.max(.1,...vals.map(p=>Math.abs(p[1]))),xmax=Math.max(.2,tcur),ymin=-1.2*maxAbs,ymax=1.2*maxAbs,m=axis(ctx,c.width,c.height,0,xmax,ymin,ymax);drawPolyline(ctx,m,vals,'#2563eb');annotateAxis(ctx,m,c.width,c.height,0,xmax,ymin,ymax,'τ (s)','x(τ)h(t-τ)');for(let k=0;k<=Math.floor(tcur/dt);k++)integ+=xv[k]*rlcImpulse(tcur-k*dt,R,L,C)*dt;ctx.fillStyle='#111827';ctx.font='13px Arial';ctx.fillText(`面积 ≈ yzs(${tcur.toFixed(2)}) = ${integ.toFixed(4)}`,14,18);}
+ const w0=Math.sqrt(1/(L*C)),alpha=R/(2*L),mode=alpha<w0-1e-6?'欠阻尼':Math.abs(alpha-w0)<=1e-6?'临界阻尼':'过阻尼',ycur=interp(yv,tcur);
+ // 推导只在 R/L/C 变化时更新
+ const derKey=[R,L,C].join('|');
+ if(derKey!==_zsDerivationKey){
+   updateZSTimeDerivation(R,L,C);updateZSLaplaceDerivation(R,L,C);
+   _zsDerivationKey=derKey;
+ }
+ document.getElementById('zsState').innerHTML=`当前参数：R=<b>${R}</b> Ω，L=<b>${L}</b> H，C=<b>${C}</b> F；自然频率 \\(\\omega_0=${w0.toFixed(3)}\\) rad/s，阻尼系数 \\(\\alpha=${alpha.toFixed(3)}\\)，属于 <b>${mode}</b>。在 t=<b>${tcur.toFixed(2)}</b> s 时，零状态响应约为 <b>${ycur.toFixed(4)}</b>。`;
+ if(window.MathJax)MathJax.typesetPromise([document.getElementById('zsState')]);
+ logEventThrottled({type:'zs_rlc_change',R,L,C,input:type,A,width,t:tcur,y:ycur,mode}, 'zs_drag');
+}
+function submitZS1(){const v=document.querySelector('input[name=zsq1]:checked');if(!v)return alert('请选择答案');const ok=v.value==='conv';document.getElementById('zsfb1').innerHTML=ok?'<div class="good">正确。零初始条件下，LTI 系统的零状态响应就是输入与冲激响应的卷积。</div>':'<div class="warn">不是逐点相乘。h(t) 描述系统对单位冲激的响应，任意输入要通过冲激分解后叠加，因此得到卷积。</div>';addRecord('RLC零状态响应关系',ok?'正确理解卷积关系':'把卷积误认为逐点相乘');if(typeof saveSubmissionPersistent==='function')saveSubmissionPersistent({module:'卷积与LTI',task:'RLC二阶系统零状态响应',question_id:'zs_rlc_01',answer:v.value,is_correct:ok,error_type:ok?'':'混淆卷积与逐点乘积'});}
+function submitZS2(){const v=document.querySelector('input[name=zsq2]:checked');if(!v)return alert('请选择答案');const ok=v.value==='no';document.getElementById('zsfb2').innerHTML=ok?'<div class="good">正确。全响应 = 零输入响应 + 零状态响应。</div>':'<div class="warn">卷积只描述零状态响应。若电感或电容存在初始储能，还要计算零输入响应。</div>';addRecord('RLC全响应判断',ok?'正确区分零输入/零状态响应':'混淆零状态响应与全响应');if(typeof saveSubmissionPersistent==='function')saveSubmissionPersistent({module:'卷积与LTI',task:'RLC二阶系统零状态响应',question_id:'zs_rlc_02',answer:v.value,is_correct:ok,error_type:ok?'':'混淆零状态响应与全响应'});}
+
+function renderRectFT(){
+ document.getElementById('paramPanel').innerHTML=`<div class="field"><label>矩形脉冲宽度 T：<span id="Tshow">1.00</span></label><input id="Tslider" type="range" min="0.4" max="2.5" step="0.05" value="1" oninput="drawRectFT()"></div>`;
+ document.getElementById('knowledgePanel').innerHTML=`\\[x(t)=\\operatorname{rect}(t/T)\\quad\\Longrightarrow\\quad X(j\\omega)=T\\,\\operatorname{sinc}(\\omega T/2)\\]<div class="info">时域变宽，频域主瓣变窄；时域变窄，频域展宽。</div>`;
+ document.getElementById('vizPanel').innerHTML=`<div class="plotgrid">${basicCanvas('ftt','时域 x(t)')}${basicCanvas('ftw','幅度谱 |X(jω)|')}</div>`;
+ document.getElementById('questionPanel').innerHTML=`<div class="qbox">当T增大时，频谱主瓣宽度如何变化？</div><label class="option"><input type="radio" name="ftq" value="n"> 变窄</label><label class="option"><input type="radio" name="ftq" value="w"> 变宽</label><button class="btn" onclick="submitFT()">提交</button><div id="ftfb"></div>`;
+ setHint('先拖动 T，再观察时域宽度和频域主瓣宽度是否呈反向变化。');renderRecords();setTimeout(drawRectFT,50);
+}
+function drawRectFT(){
+ const T=Number(document.getElementById('Tslider').value);document.getElementById('Tshow').textContent=T.toFixed(2);
+ let c=document.getElementById('ftt'),ctx=c.getContext('2d'),m=axis(ctx,c.width,c.height,-3,3,-.2,1.3);drawRect(ctx,m,-T/2,T/2,1);
+ c=document.getElementById('ftw');ctx=c.getContext('2d');m=axis(ctx,c.width,c.height,-12,12,-.2,2.7);
+ const pts=[];for(let i=0;i<=700;i++){const w=-12+24*i/700;const z=w*T/2;const y=Math.abs(Math.abs(z)<1e-9?T:T*Math.sin(z)/z);pts.push([w,y])}drawPolyline(ctx,m,pts);
+ logEventThrottled({type:'ft_width',T}, 'ft_drag');
+}
+function submitFT(){const v=document.querySelector('input[name=ftq]:checked');if(!v)return;const ok=v.value==='n';document.getElementById('ftfb').innerHTML=ok?'<div class="good">正确：T越大，主瓣越窄。</div>':'<div class="warn">再拖动T观察一次：时域变宽时，零点间距缩小。</div>';addRecord('傅里叶交互判断',ok?'正确':'错误');logEvent({type:'ft_submit',correct:ok});if(typeof saveSubmissionPersistent==='function')saveSubmissionPersistent({module:'傅里叶变换与频谱',task:'矩形脉冲与频谱',question_id:'ft_width_01',answer:v.value,is_correct:ok,error_type:ok?'':'时宽频宽关系混淆'});}
+
+function renderTimeShift(){
+ document.getElementById('paramPanel').innerHTML=`<div class="field"><label>时移 t₀：<span id="tsShow">0.0</span></label><input id="tsSlider" type="range" min="-2" max="2" step="0.1" value="0" oninput="drawTimeShift()"></div>`;
+ document.getElementById('knowledgePanel').innerHTML=`\\[x(t-t_0)\\longleftrightarrow X(j\\omega)e^{-j\\omega t_0}\\]<div class="info">时移不改变幅度谱，只改变相位谱。</div>`;
+ document.getElementById('vizPanel').innerHTML=`<div class="plotgrid">${basicCanvas('tst','时域信号')}${basicCanvas('tsp','相位谱示意')}</div>`;document.getElementById('questionPanel').innerHTML='<div class="muted">此任务主要用于交互观察。</div>';setHint('改变 t₀，观察时域平移，同时相位谱斜率变化。');renderRecords();setTimeout(drawTimeShift,50);
+}
+function drawTimeShift(){
+ const t0=Number(document.getElementById('tsSlider').value);document.getElementById('tsShow').textContent=t0.toFixed(1);
+ let c=document.getElementById('tst'),ctx=c.getContext('2d'),m=axis(ctx,c.width,c.height,-3,3,-.2,1.3);drawRect(ctx,m,t0-.5,t0+.5,1);
+ c=document.getElementById('tsp');ctx=c.getContext('2d');m=axis(ctx,c.width,c.height,-8,8,-10,10);drawPolyline(ctx,m,[[-8,8*t0],[8,-8*t0]]);
+ logEventThrottled({type:'ts_drag',t0}, 'ts_drag');
+}
+
+function renderSampling(){
+ document.getElementById('paramPanel').innerHTML=`<div class="field"><label>信号最高频率 fₘ(kHz)</label><input id="fm" type="number" value="3" min="0.5" step="0.5" onchange="drawSampling()"></div><div class="field"><label>采样频率 fₛ(kHz)：<span id="fsShow">6.0</span></label><input id="fs" type="range" min="2" max="12" step="0.1" value="6" oninput="drawSampling()"></div>`;
+ document.getElementById('knowledgePanel').innerHTML=`\\[f_s\\ge 2f_m\\]<div class="info">抽样在频域中对应原频谱以 fₛ 为间隔周期复制；当副本重叠时发生混叠。</div>`;
+ document.getElementById('vizPanel').innerHTML=basicCanvas('sc','频谱副本示意')+'<div id="sstate" class="info"></div>';
+ document.getElementById('questionPanel').innerHTML='<div class="muted">先调节 fₛ 观察临界点，再回答教师课堂提问。</div>';setHint('把 fₛ 从低到高拖动，找到“刚好不重叠”的临界位置。');renderRecords();setTimeout(drawSampling,50);
+}
+function drawSampling(){
+ const fm=Number(document.getElementById('fm').value),fs=Number(document.getElementById('fs').value);document.getElementById('fsShow').textContent=fs.toFixed(1);
+ const c=document.getElementById('sc'),ctx=c.getContext('2d'),m=axis(ctx,c.width,c.height,-15,15,-.1,1.2);
+ [-2,-1,0,1,2].forEach(k=>{const cen=k*fs;drawPolyline(ctx,m,[[cen-fm,0],[cen,1],[cen+fm,0]],k===0?'#2563eb':'#64748b')});
+ document.getElementById('sstate').innerHTML=fs>=2*fm?'<b>当前无混叠：</b>相邻频谱副本不重叠。':'<b>当前发生混叠：</b>相邻频谱副本已经重叠。';
+ logEventThrottled({type:'sampling',fm,fs,alias:fs<2*fm}, 'sampling_drag');
+}
+
+function renderLaplace(){
+ document.getElementById('paramPanel').innerHTML='<div class="muted">当前先做系统函数概念任务。</div>';
+ document.getElementById('knowledgePanel').innerHTML=`\\[H(s)=\\frac{Y(s)}{X(s)}\\quad(\\text{零初始条件})\\]<p>例如 \\(\\dot y(t)+ay(t)=bx(t)\\)，零初始条件下：</p>\\[H(s)=\\frac{b}{s+a}\\]`;
+ document.getElementById('vizPanel').innerHTML='<div class="info">下一步可扩展为：输入微分方程系数后自动生成H(s)、极点和零状态响应。</div>';
+ document.getElementById('questionPanel').innerHTML='<div class="qbox">若H(s)=1/(s+2)，其极点在哪里？</div><input id="lpans" type="text" placeholder="例如：s=-2"><button class="btn" onclick="submitLP()">提交</button><div id="lpfb"></div>';setHint('系统函数的分母根就是极点。');renderRecords();
+}
+function submitLP(){const raw=document.getElementById('lpans').value;const a=raw.replace(/\s/g,'');const ok=/^s?=-?2$/.test(a)||/^p=-?2$/.test(a)||a==='-2';document.getElementById('lpfb').innerHTML=ok?'<div class="good">正确：极点为 s=-2。</div>':'<div class="warn">提示：令分母 s+2=0。</div>';addRecord('拉普拉斯任务',ok?'正确':'错误');if(typeof saveSubmissionPersistent==='function')saveSubmissionPersistent({module:'拉普拉斯与S域系统',task:'系统函数与极点',question_id:'lp_pole_01',answer:raw,is_correct:ok,error_type:ok?'':'极点求解错误'});}
+
+function renderPole(){
+ document.getElementById('paramPanel').innerHTML=`<div class="field"><label>实极点 p：<span id="pShow">-1.0</span></label><input id="pSlider" type="range" min="-5" max="2" step="0.1" value="-1" oninput="drawPole()"></div>`;
+ document.getElementById('knowledgePanel').innerHTML=`<p>极点 \\(p=\\sigma+j\\omega_0\\) 对应自然响应中的 \\(e^{pt}\\)。</p><div class="info">实部决定衰减/增长速度；虚部决定振荡频率。</div>`;
+ document.getElementById('vizPanel').innerHTML=basicCanvas('pc','自然响应 e^{pt}')+'<div id="pstate" class="info"></div>';document.getElementById('questionPanel').innerHTML='<div class="muted">拖动极点观察响应变化。</div>';setHint('把极点从左半平面拖到右半平面，观察响应由衰减变成增长。');renderRecords();setTimeout(drawPole,50);
+}
+function drawPole(){
+ const p=Number(document.getElementById('pSlider').value);document.getElementById('pShow').textContent=p.toFixed(1);const c=document.getElementById('pc'),ctx=c.getContext('2d'),m=axis(ctx,c.width,c.height,0,5,-.1,3.2);const pts=[];for(let i=0;i<=400;i++){let t=5*i/400,y=Math.exp(p*t);if(y>3)y=3;pts.push([t,y])}drawPolyline(ctx,m,pts);
+ document.getElementById('pstate').innerHTML=p<0?'左半平面极点：自然响应衰减。':p>0?'右半平面极点：自然响应增长。':'位于虚轴边界，需要结合系统进一步判断。';
+ logEventThrottled({type:'pole_drag',p}, 'pole_drag');
+}
+
+function renderZROC(){
+ document.getElementById('paramPanel').innerHTML='<div class="muted">当前以ROC判断为主。</div>';
+ document.getElementById('knowledgePanel').innerHTML=`\\[X(z)=\\sum_{n=-\\infty}^{\\infty}x[n]z^{-n}\\]<div class="info">离散LTI系统稳定的重要条件：单位圆必须包含在H(z)的ROC内。</div>`;
+ document.getElementById('vizPanel').innerHTML='<div class="info">下一步可加入z平面可拖动极点/零点与ROC可视化。</div>';document.getElementById('questionPanel').innerHTML='<div class="qbox">若因果系统极点在0.5，ROC为|z|&gt;0.5，系统是否稳定？</div><label class="option"><input type="radio" name="zq" value="yes"> 稳定</label><label class="option"><input type="radio" name="zq" value="no"> 不稳定</label><button class="btn" onclick="submitZ()">提交</button><div id="zfb"></div>';setHint('判断单位圆 |z|=1 是否包含在ROC中。');renderRecords();
+}
+function submitZ(){const v=document.querySelector('input[name=zq]:checked');if(!v)return;const ok=v.value==='yes';document.getElementById('zfb').innerHTML=ok?'<div class="good">正确：|z|=1 位于 |z|&gt;0.5 中，因此稳定。</div>':'<div class="warn">再判断一次：单位圆是否落在ROC内？</div>';addRecord('Z域稳定性判断',ok?'正确':'错误');if(typeof saveSubmissionPersistent==='function')saveSubmissionPersistent({module:'Z变换与离散系统',task:'ROC与稳定性',question_id:'z_roc_01',answer:v.value,is_correct:ok,error_type:ok?'':'单位圆判定错误'});}
+
+// ===== 持久化层（单例 IndexedDB）=====
+const AGENT_API_BASE = (window.AGENT_CONFIG && window.AGENT_CONFIG.API_BASE) || '';
+let CURRENT_STUDENT_ID = localStorage.getItem('signal_student_id') || 'Student_001';
+// 从 URL ?student_id=xxx 读取并落地
+try{
+  const _urlSid = new URLSearchParams(location.search).get('student_id');
+  if(_urlSid){
+    localStorage.setItem('signal_student_id', _urlSid);
+    CURRENT_STUDENT_ID = _urlSid;
+  }
+}catch(e){}
+
+let _dbPromise = null;
+function openLocalDB(){
+  if(_dbPromise) return _dbPromise;
+  _dbPromise = new Promise((resolve,reject)=>{
+    const req=indexedDB.open('signal_system_agent',1);
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains('events')){
+        const s=db.createObjectStore('events',{keyPath:'id',autoIncrement:true});
+        s.createIndex('student_id','student_id',{unique:false});
+        s.createIndex('created_at','created_at',{unique:false});
+      }
+      if(!db.objectStoreNames.contains('submissions')){
+        const s=db.createObjectStore('submissions',{keyPath:'id',autoIncrement:true});
+        s.createIndex('student_id','student_id',{unique:false});
+        s.createIndex('question_id','question_id',{unique:false});
+      }
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+  return _dbPromise;
+}
+async function localPut(store,obj){
+  const db=await openLocalDB();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(store,'readwrite');
+    tx.objectStore(store).add(obj);
+    tx.oncomplete=()=>resolve(true);
+    tx.onerror=()=>reject(tx.error);
+  });
+}
+async function saveEventPersistent(evt){
+  const obj={student_id:CURRENT_STUDENT_ID,created_at:new Date().toISOString(),...evt};
+  try{ await localPut('events',obj); }catch(e){}
+  if(AGENT_API_BASE){
+    try{
+      await fetch(AGENT_API_BASE.replace(/\/$/,'')+'/api/events',{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(obj)
+      });
+    }catch(e){}
+  }
+}
+async function saveSubmissionPersistent(obj){
+  const row={student_id:CURRENT_STUDENT_ID,created_at:new Date().toISOString(),...obj};
+  try{ await localPut('submissions',row); }catch(e){}
+  if(AGENT_API_BASE){
+    try{
+      await fetch(AGENT_API_BASE.replace(/\/$/,'')+'/api/submissions',{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(row)
+      });
+    }catch(e){}
+  }
+}
+async function exportLocalData(){
+  const db=await openLocalDB();
+  const getAll=(store)=>new Promise((resolve,reject)=>{
+    const tx=db.transaction(store,'readonly');
+    const req=tx.objectStore(store).getAll();
+    req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);
+  });
+  const data={events:await getAll('events'),submissions:await getAll('submissions')};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='signal_system_agent_data.json';a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ===== 教师端：从 IndexedDB 读回并渲染 =====
+let teacherEvents=[];
+let teacherSubs=[];
+async function loadAllFromLocalDB(){
+  try{
+    const db=await openLocalDB();
+    const getAll=(store)=>new Promise((resolve,reject)=>{
+      const tx=db.transaction(store,'readonly');
+      const req=tx.objectStore(store).getAll();
+      req.onsuccess=()=>resolve(req.result||[]);
+      req.onerror=()=>reject(req.error);
+    });
+    teacherEvents=await getAll('events');
+    teacherSubs=await getAll('submissions');
+  }catch(e){
+    teacherEvents=[];teacherSubs=[];
+  }
+}
+function renderTeacherKPI(subs){
+  const students=new Set(subs.map(s=>s.student_id).filter(Boolean));
+  const kpiStudents=students.size;
+  // 已完成核心任务：至少完成 1 个模块的学生 / 参与学生
+  const moduleDone={};
+  students.forEach(sid=>moduleDone[sid]=new Set());
+  subs.forEach(s=>{ if(s.student_id&&s.module) moduleDone[s.student_id].add(s.module); });
+  let completed=0;
+  students.forEach(sid=>{ if(moduleDone[sid].size>=1) completed++; });
+  const kpiDone = students.size ? Math.round(completed/students.size*100)+'%' : '-';
+  // 需重点关注：错误率 >= 50% 且提交 >= 3 次
+  const byStudent={};
+  subs.forEach(s=>{
+    if(!s.student_id) return;
+    byStudent[s.student_id]=byStudent[s.student_id]||{total:0,wrong:0};
+    byStudent[s.student_id].total++;
+    if(s.is_correct===false) byStudent[s.student_id].wrong++;
+  });
+  let focus=0;
+  Object.values(byStudent).forEach(v=>{ if(v.total>=3 && v.wrong/v.total>=0.5) focus++; });
+  // 重复错误率：同一 question_id 答错 >= 2 次
+  const byQ={};
+  subs.forEach(s=>{
+    if(!s.question_id) return;
+    byQ[s.question_id]=byQ[s.question_id]||{total:0,wrong:0};
+    byQ[s.question_id].total++;
+    if(s.is_correct===false) byQ[s.question_id].wrong++;
+  });
+  const qIds=Object.keys(byQ);
+  let repeat=0; qIds.forEach(q=>{ if(byQ[q].wrong>=2) repeat++; });
+  const kpiRepeat = qIds.length ? Math.round(repeat/qIds.length*100)+'%' : '-';
+  document.getElementById('kpiStudents').textContent = kpiStudents || '-';
+  document.getElementById('kpiDone').textContent = kpiDone;
+  document.getElementById('kpiFocus').textContent = focus || '-';
+  document.getElementById('kpiRepeat').textContent = kpiRepeat;
+}
+function renderTeacherTable(subs){
+  const suggestionMap={
+    '卷积与LTI':'加强图解卷积与系统响应联系',
+    '傅里叶变换与频谱':'强化参数—图形—公式联动',
+    '抽样与混叠':'增加动态频谱复制实验',
+    '拉普拉斯与S域系统':'增加系统函数与极点联系',
+    '零极点与系统特性':'增加极点拖动与响应观察',
+    'Z变换与离散系统':'增加z平面与单位圆交互'
+  };
+  const byModule={};
+  subs.forEach(s=>{
+    const m=s.module||'未分类';
+    byModule[m]=byModule[m]||{total:0,wrong:0,errors:{}};
+    byModule[m].total++;
+    if(s.is_correct===false){
+      byModule[m].wrong++;
+      if(s.error_type) byModule[m].errors[s.error_type]=(byModule[m].errors[s.error_type]||0)+1;
+    }
+  });
+  const rows=Object.keys(byModule).map(m=>{
+    const info=byModule[m];
+    const rate=info.total?Math.round(info.wrong/info.total*100)+'%':'-';
+    let topErr='-',topCount=0;
+    Object.entries(info.errors).forEach(([k,v])=>{ if(v>topCount){topCount=v;topErr=k;} });
+    const weak = topErr + `（错误率 ${rate}，共 ${info.total} 次）`;
+    const sug = suggestionMap[m]||'暂无建议';
+    return `<tr><td>${m}</td><td>${weak}</td><td>${sug}</td></tr>`;
+  });
+  document.getElementById('teacherTableBody').innerHTML = rows.length ? rows.join('') : '<tr><td colspan="3" class="muted">暂无提交数据。</td></tr>';
+}
+function renderTeacherLog(evts){
+  const el=document.getElementById('eventLog');
+  if(!el) return;
+  if(!evts||!evts.length){ el.textContent='暂无交互记录。'; return; }
+  const sorted=evts.slice().sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+  el.textContent = JSON.stringify(sorted.slice(0,200),null,2);
+}
+async function refreshTeacherView(){
+  await loadAllFromLocalDB();
+  renderTeacherKPI(teacherSubs);
+  renderTeacherTable(teacherSubs);
+  renderTeacherLog(teacherEvents);
+}
+window.refreshTeacherView = refreshTeacherView;
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const el=document.getElementById('dataMode');
+  if(el) el.textContent=AGENT_API_BASE?'浏览器本地 + 远程数据库':'浏览器本地 IndexedDB';
+  const sidEl=document.getElementById('studentIdShow');
+  if(sidEl) sidEl.textContent=CURRENT_STUDENT_ID;
+});
+
+</script>
+</body>
+</html>
